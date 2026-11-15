@@ -1,0 +1,81 @@
+# core-pulse config. Copy to /etc/core-pulse/config.toml and adjust.
+# Sources you leave out are simply not read.
+
+[server]
+# Only loopback or private addresses are accepted. Put nginx in front for
+# remote access.
+listen = ["127.0.0.1:8790"]
+# Set when the dashboard lives under a sub-path, for example "/core-pulse".
+base_path = ""
+# Address of the reverse proxy in front of core-pulse. Its X-Real-IP header
+# is then used as the visitor address for login limits and logs.
+trusted_proxies = ["127.0.0.1/32"]
+
+[storage]
+database = "/var/lib/core-pulse/core-pulse.db"
+raw_retention_days = 90
+hourly_retention_days = 365
+# When the database grows past this, the oldest raw events are deleted first.
+max_db_size_mb = 1024
+
+[real_ip]
+# Proxies in front of nginx, such as a CDN. Requests from these ranges carry
+# the visitor address in `header`. Leave empty if nothing sits in front.
+trusted_proxies = []
+# "x-forwarded-for", "x-real-ip" or "cf-connecting-ip". The matching nginx
+# variable ($http_x_forwarded_for and so on) must be in the log format.
+header = "x-forwarded-for"
+
+# One block per access log. `format` is the log_format string from nginx.conf.
+[[nginx]]
+name = "main"
+path = "/var/log/nginx/access.log"
+format = '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"'
+# After changing log_format, list the old one here so older lines still parse.
+# previous_formats = ['...']
+# Used when the format has no $host.
+site = "example.com"
+
+# Login forms of the apps behind this nginx. A POST to `path` is a sign-in:
+# a `success` status (default 302, 303) is a success, any other 2xx-4xx a
+# failure. Two-step logins that answer 200 after the password: failure = [].
+# Customer logins: staff = false (counted, not flagged).
+# [[nginx.logins]]
+# name = "Shop admin"
+# path = "/admin/login/"
+
+[fail2ban]
+log = "/var/log/fail2ban.log"
+
+[ssh]
+# "journal" reads the systemd journal. Use from = "file" and
+# path = "/var/log/auth.log" on systems that log to files.
+from = "journal"
+unit = "ssh.service"
+
+[ufw]
+# Without a unit, kernel messages are read from the journal.
+# Or: from = "file" and path = "/var/log/ufw.log".
+from = "journal"
+
+[systemd]
+# Failed systemd units, read from the journal. Remove to disable.
+
+[network]
+# Bandwidth per interface and live TCP connections, read from /proc.
+enabled = true
+
+[geoip]
+# Country database (MaxMind format). `core-pulse update-geoip` downloads
+# DB-IP Lite (CC BY 4.0); deploy/core-pulse-geoip.timer refreshes it monthly.
+database = "/var/lib/core-pulse/dbip-country-lite.mmdb"
+
+# Display names for SSH key fingerprints (ssh-keygen -lf authorized_keys).
+# [ssh_keys]
+# "SHA256:..." = "laptop"
+
+# Requests whose path matches a rule are flagged as probes. Adding [[probes]]
+# replaces the built-in rules, so list every rule you want.
+# [[probes]]
+# name = "wordpress"
+# pattern = '(?i)/(wp-login\.php|wp-admin)'

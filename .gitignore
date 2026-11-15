@@ -1,0 +1,15 @@
+/target
+/.toolchain
+
+# Real config, data and secrets stay out of git.
+/var
+/config.toml
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.mmdb
+*.pem
+*.key
+.env

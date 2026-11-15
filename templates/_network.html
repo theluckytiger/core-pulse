@@ -1,0 +1,73 @@
+{% if !panel.container.is_empty() %}
+<p class="crumb"><a href="?range={{ panel.range.param() }}">Network</a> / <span class="mono">{{ panel.container }}</span></p>
+{% endif %}
+
+<section class="stats">
+  {% for stat in panel.stats %}
+  <div class="stat"><span class="label">{{ stat.label }}</span><span class="value">{{ stat.value }}</span></div>
+  {% endfor %}
+</section>
+
+<section class="card wide">
+  <h2>{% if panel.container.is_empty() %}Uplink bandwidth{% else %}Container bandwidth{% endif %}</h2>
+  <div class="chart" id="network-chart"></div>
+  <script type="application/json" class="chart-data" data-target="network-chart">{{ panel.chart|safe }}</script>
+</section>
+
+<div class="grid">
+  {% if panel.container.is_empty() %}
+  <section class="card">
+    <h2>Interfaces</h2>
+    {% if panel.interfaces.is_empty() %}
+    <p class="empty">None.</p>
+    {% else %}
+    <table>
+      <thead><tr><th>Name</th><th class="num">In now</th><th class="num">Out now</th><th class="num">In ({{ panel.range.label() }})</th><th class="num">Out</th></tr></thead>
+      <tbody>
+        {% for i in panel.interfaces %}
+        <tr><td class="mono">{{ i.name }}</td><td class="num">{{ i.rx_now }}</td><td class="num">{{ i.tx_now }}</td><td class="num">{{ i.rx_total }}</td><td class="num">{{ i.tx_total }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  <section class="card">
+    <h2>Containers</h2>
+    {% if panel.containers.is_empty() %}
+    <p class="empty">None.</p>
+    {% else %}
+    <table>
+      <thead><tr><th>Container</th><th class="num">In now</th><th class="num">Out now</th><th class="num">In ({{ panel.range.label() }})</th><th class="num">Out</th></tr></thead>
+      <tbody>
+        {% for c in panel.containers %}
+        <tr{% if c.active %} class="selected"{% endif %}>
+          <td class="mono"><a href="?range={{ panel.range.param() }}&{{ c.link }}">{{ c.name }}</a></td>
+          <td class="num">{{ c.rx_now }}</td><td class="num">{{ c.tx_now }}</td>
+          <td class="num">{{ c.rx_total }}</td><td class="num">{{ c.tx_total }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </section>
+</div>
+
+<section class="card wide">
+  <h2>Connections <span class="note">sampled {{ panel.sampled }}</span></h2>
+  {% if panel.connections.is_empty() %}
+  <p class="empty">None.</p>
+  {% else %}
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Owner</th><th>Direction</th><th>Remote</th><th>Port</th><th class="num">Open</th></tr></thead>
+      <tbody>
+        {% for c in panel.connections %}
+        <tr><td class="mono">{{ c.owner }}</td><td>{{ c.direction }}</td><td class="mono">{{ c.remote }}</td><td>{{ c.port }}</td><td class="num">{{ c.count }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</section>

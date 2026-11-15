@@ -1,0 +1,56 @@
+<section class="stats">
+  {% for stat in panel.stats %}
+  <div class="stat"><span class="label">{{ stat.label }}</span><span class="value">{{ stat.value }}</span></div>
+  {% endfor %}
+</section>
+
+<section class="card wide">
+  <h2>Requests over time</h2>
+  <div class="chart" id="traffic-chart"></div>
+  <script type="application/json" class="chart-data" data-target="traffic-chart">{{ panel.chart|safe }}</script>
+</section>
+
+<div class="grid">
+  <section class="card">
+    <h2>Top visitors</h2>
+    {% if panel.clients.is_empty() %}
+    <p class="empty">Nothing yet.</p>
+    {% else %}
+    <table>
+      <thead><tr><th>Address</th><th>Country</th><th class="num">Requests</th><th class="num">Attacks</th><th>Last seen</th></tr></thead>
+      <tbody>
+        {% for c in panel.clients %}
+        <tr><td class="mono">{{ c.ip }}</td><td>{{ c.place }}</td><td class="num">{{ c.requests }}</td><td class="num">{{ c.probes }}</td><td>{{ c.last_seen }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </section>
+
+  {% include "_bars.html" %}
+</div>
+
+<section class="card wide">
+  <h2>{% if panel.range.is_live() %}Latest requests{% else %}Latest attacks{% endif %}</h2>
+  {% if panel.recent.is_empty() %}
+  <p class="empty">Nothing yet.</p>
+  {% else %}
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Time</th><th>Site</th><th>Address</th><th>Request</th><th class="num">Status</th><th>Attack</th></tr></thead>
+      <tbody>
+        {% for r in panel.recent %}
+        <tr>
+          <td>{{ r.time }}</td>
+          <td>{{ r.site }}</td>
+          <td><span class="mono">{{ r.ip }}</span> {{ r.place }}</td>
+          <td class="mono path" title="{{ r.path }}">{{ r.method }} {{ r.path }}</td>
+          <td class="num"><span class="status {{ r.class }}">{{ r.status }}</span></td>
+          <td>{% if !r.probe.is_empty() %}{{ r.probe }} <span class="tag">{{ r.outcome }}</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</section>

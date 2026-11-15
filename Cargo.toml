@@ -1,0 +1,45 @@
+[package]
+name = "core-pulse"
+version = "0.1.0"
+edition = "2024"
+description = "Self-hosted security and traffic monitor for a Linux web server"
+license = "MIT"
+repository = "https://github.com/theluckytiger/core-pulse"
+publish = false
+
+[dependencies]
+anyhow = "1.0.104"
+argon2 = "0.6.0"
+askama = "0.16.1"
+axum = "0.8.9"
+chrono = "0.4.45"
+clap = { version = "4.6.7", features = ["derive"] }
+data-encoding = "2.11.1"
+flate2 = "1.1.11"
+getrandom = "0.4.3"
+hmac = "0.13.0"
+ipnet = { version = "2.12.2", features = ["serde"] }
+maxminddb = "0.33.0"
+qrcode = "0.14.1"
+regex = "1.13.1"
+rpassword = "7.5.5"
+rusqlite = { version = "0.42.0", features = ["bundled"] }
+rustix = { version = "1.1.6", features = ["fs"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+sha1 = "0.11.0"
+sha2 = "0.11.1"
+subtle = "2.6.1"
+tokio = { version = "1.54.1", features = ["macros", "rt-multi-thread", "net", "signal", "process", "io-util", "time", "sync"] }
+tokio-stream = "0.1.19"
+toml = "1.2.1"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+
+[dev-dependencies]
+tempfile = "3.27.0"
+tower = { version = "0.5.3", features = ["util"] }
+
+[profile.release]
+lto = "thin"
+strip = true

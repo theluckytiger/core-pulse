@@ -1,0 +1,25 @@
+# Serving core-pulse under https://example.com/core-pulse/
+# Put this inside the HTTPS server block and set base_path = "/core-pulse"
+# and trusted_proxies (the address nginx connects from) in config.toml.
+
+location = /core-pulse {
+    return 301 https://$host/core-pulse/;
+}
+
+location /core-pulse/ {
+    # Optional: only let your CDN or your own networks in.
+    # allow 192.0.2.0/24;
+    # deny all;
+
+    proxy_pass http://127.0.0.1:8790;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    # The visitor address core-pulse uses for login limits and logs.
+    # Behind Cloudflare, use $http_cf_connecting_ip and allow only Cloudflare's ranges above.
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Proto https;
+
+    # Live updates are a long-lived event stream.
+    proxy_buffering off;
+    proxy_read_timeout 1h;
+}

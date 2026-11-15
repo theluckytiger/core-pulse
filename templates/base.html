@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="htmx-config" content='{"includeIndicatorStyles": false, "allowEval": false, "allowScriptTags": false}'>
+  <title>{% block title %}core-pulse{% endblock %}</title>
+  <link rel="stylesheet" href="{{ layout.base }}/static/uplot.css?v={{ layout.version }}">
+  <link rel="stylesheet" href="{{ layout.base }}/static/app.css?v={{ layout.version }}">
+  <script src="{{ layout.base }}/static/htmx.js?v={{ layout.version }}" defer></script>
+  <script src="{{ layout.base }}/static/htmx-sse.js?v={{ layout.version }}" defer></script>
+  <script src="{{ layout.base }}/static/uplot.js?v={{ layout.version }}" defer></script>
+  <script src="{{ layout.base }}/static/app.js?v={{ layout.version }}" defer></script>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="{{ layout.base }}/">core-pulse</a>
+    <nav class="pages">
+      <a href="{{ layout.base }}/?range={{ panel.range.param() }}" {% if layout.page == "overview" %}aria-current="page"{% endif %}>Overview</a>
+      <a href="{{ layout.base }}/traffic?range={{ panel.range.param() }}" {% if layout.page == "traffic" %}aria-current="page"{% endif %}>Traffic</a>
+      <a href="{{ layout.base }}/security?range={{ panel.range.param() }}" {% if layout.page == "security" %}aria-current="page"{% endif %}>Security</a>
+      <a href="{{ layout.base }}/network?range={{ panel.range.param() }}" {% if layout.page == "network" %}aria-current="page"{% endif %}>Network</a>
+    </nav>
+    <form class="logout" method="post" action="{{ layout.base }}/logout">
+      <input type="hidden" name="csrf" value="{{ layout.csrf }}">
+      <span class="user">{{ layout.user }}</span>
+      {% if !layout.demo %}<button type="submit">Sign out</button>{% endif %}
+    </form>
+  </header>
+  {% if layout.demo %}<p class="demo">Demo mode: everything here is made-up data.</p>{% endif %}
+  <nav class="ranges" aria-label="Time range">
+    {% for r in layout.ranges %}
+    <a href="?range={{ r.param }}{{ layout.extra }}" {% if r.active %}aria-current="true"{% endif %}>{{ r.label }}</a>
+    {% endfor %}
+  </nav>
+  <main {% if panel.range.is_live() %}hx-ext="sse" sse-connect="{{ layout.base }}/events"{% endif %}>
+    {% block content %}{% endblock %}
+  </main>
+  {% if layout.geo_credit %}
+  <footer class="credit">Countries: <a href="https://db-ip.com" rel="noopener noreferrer">IP Geolocation by DB-IP</a></footer>
+  {% endif %}
+</body>
+</html>

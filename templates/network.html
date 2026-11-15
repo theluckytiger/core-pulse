@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Network · core-pulse{% endblock %}
+{% block content %}
+<div id="panel"
+     hx-get="{{ base }}/fragments/network?range={{ panel.range.param() }}{{ panel.query }}"
+     hx-trigger="{% if panel.range.is_live() %}sse:tick{% else %}every 60s{% endif %}"
+     hx-swap="innerHTML">
+  {% include "_network.html" %}
+</div>
+{% endblock %}

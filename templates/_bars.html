@@ -1,0 +1,18 @@
+{% for section in panel.sections %}
+<section class="card">
+  <h2>{{ section.title }}</h2>
+  {% if section.rows.is_empty() %}
+  <p class="empty">Nothing yet.</p>
+  {% else %}
+  <table class="bars">
+    {% for row in section.rows %}
+    <tr>
+      <td class="name" title="{{ row.name }}">{{ row.name }}</td>
+      <td class="meter"><meter min="0" max="100" value="{{ row.share }}"></meter></td>
+      <td class="num">{{ row.count }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</section>
+{% endfor %}

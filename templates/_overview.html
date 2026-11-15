@@ -1,0 +1,118 @@
+<section class="verdict {{ panel.level.class() }}">
+  <p class="headline">{{ panel.headline }}</p>
+  {% if !panel.notices.is_empty() %}
+  <ul class="notices">
+    {% for n in panel.notices %}
+    <li class="{{ n.level.class() }}">{{ n.text }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+
+<div class="grid">
+  <section class="card">
+    <h2>Summary</h2>
+    <table class="summary">
+      {% for row in panel.summary %}
+      <tr><th scope="row">{{ row.label }}</th><td>{{ row.value }}</td></tr>
+      {% endfor %}
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Sign-ins</h2>
+    {% if panel.logins.is_empty() %}
+    <p class="empty">None.</p>
+    {% else %}
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Time</th><th>Service</th><th>User / device</th><th>Origin</th></tr></thead>
+        <tbody>
+          {% for l in panel.logins %}
+          <tr>
+            <td>{{ l.time }}{% if l.times > 1 %} <span class="note">×{{ l.times }} since {{ l.first }}</span>{% endif %}</td>
+            <td>{{ l.what }}</td>
+            <td>{{ l.who }}{% if !l.new.is_empty() %} <span class="tag warn">{{ l.new }}</span>{% endif %}</td>
+            <td><span title="{{ l.ip }}">{{ l.place }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </section>
+</div>
+
+<div class="grid">
+  <section class="card">
+    <h2>Attack requests by kind</h2>
+    {% if panel.attacks.is_empty() %}
+    <p class="empty">None.</p>
+    {% else %}
+    <table>
+      <thead><tr><th>Kind</th><th class="num">Requests</th><th class="num">Stopped</th><th class="num">Served</th></tr></thead>
+      <tbody>
+        {% for a in panel.attacks %}
+        <tr>
+          <td title="{{ a.explain }}">{{ a.title }}</td>
+          <td class="num">{{ a.tries }}</td>
+          <td class="num">{{ a.stopped }}</td>
+          <td class="num">{{ a.answered }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </section>
+
+  {% if let Some(section) = panel.countries %}
+  <section class="card">
+    <h2>{{ section.title }}</h2>
+    {% if section.rows.is_empty() %}
+    <p class="empty">None.</p>
+    {% else %}
+    <table class="bars">
+      {% for row in section.rows %}
+      <tr>
+        <td class="name">{{ row.name }}</td>
+        <td class="meter"><meter min="0" max="100" value="{{ row.share }}"></meter></td>
+        <td class="num">{{ row.count }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% endif %}
+  </section>
+  {% endif %}
+</div>
+
+{% if !panel.answered.is_empty() %}
+<section class="card wide">
+  <h2>Attack requests served (2xx)</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Request</th><th class="num">Count</th><th class="num">Sources</th><th>Last</th><th class="num">Status</th><th>Match</th></tr></thead>
+      <tbody>
+        {% for a in panel.answered %}
+        <tr>
+          <td class="mono path" title="{{ a.request }}">{{ a.request }}</td>
+          <td class="num">{{ a.times }}</td>
+          <td class="num">{{ a.addresses }}</td>
+          <td>{{ a.last }}</td>
+          <td class="num">{{ a.status }}</td>
+          <td>{% if a.real %}<span class="tag bad">{{ a.meaning }}</span>{% else %}<span class="tag">{{ a.meaning }}</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+<section class="card wide">
+  <h2>Server</h2>
+  <section class="stats">
+    {% for stat in panel.health %}
+    <div class="stat"><span class="label">{{ stat.label }}</span><span class="value">{{ stat.value }}</span></div>
+    {% endfor %}
+  </section>
+</section>

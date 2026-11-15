@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Traffic · core-pulse{% endblock %}
+{% block content %}
+<div id="panel"
+     hx-get="{{ base }}/fragments/traffic?range={{ panel.range.param() }}"
+     hx-trigger="{% if panel.range.is_live() %}sse:tick{% else %}every 60s{% endif %}"
+     hx-swap="innerHTML">
+  {% include "_traffic.html" %}
+</div>
+{% endblock %}

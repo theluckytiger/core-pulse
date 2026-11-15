@@ -1,0 +1,53 @@
+[Unit]
+Description=core-pulse security and traffic monitor
+Documentation=https://github.com/theluckytiger/core-pulse
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=core-pulse
+Group=core-pulse
+# adm: read /var/log/fail2ban.log and the system journal.
+SupplementaryGroups=adm
+ExecStart=/usr/local/bin/core-pulse --config /etc/core-pulse/config.toml serve
+Restart=on-failure
+RestartSec=5s
+
+# Data lives in /var/lib/core-pulse, the only place it can write.
+StateDirectory=core-pulse
+StateDirectoryMode=0700
+UMask=0077
+
+# Sandbox. core-pulse only reads logs and serves HTTP.
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RemoveIPC=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged
+
+# Keep it light next to the sites it watches.
+MemoryMax=256M
+CPUWeight=50
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

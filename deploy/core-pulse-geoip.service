@@ -1,0 +1,42 @@
+[Unit]
+Description=core-pulse: update the IP country database
+Documentation=https://github.com/theluckytiger/core-pulse
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=core-pulse
+Group=core-pulse
+# Downloads the free DB-IP Lite country file with curl and swaps it in.
+# The running dashboard picks it up within ten minutes, no restart needed.
+ExecStart=/usr/local/bin/core-pulse --config /etc/core-pulse/config.toml update-geoip
+
+StateDirectory=core-pulse
+StateDirectoryMode=0700
+UMask=0077
+
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RemoveIPC=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged
+Nice=10

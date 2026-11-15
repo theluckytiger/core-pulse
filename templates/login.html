@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · core-pulse</title>
+  <link rel="stylesheet" href="{{ base }}/static/app.css?v={{ version }}">
+</head>
+<body class="login">
+  <main>
+    <h1>core-pulse</h1>
+    <form method="post" action="{{ base }}/login">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <label>Username
+        <input name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
+      </label>
+      <label>Password
+        <input name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <label>Code from your authenticator app
+        <input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+      </label>
+      {% if let Some(error) = error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+      <button type="submit">Sign in</button>
+    </form>
+  </main>
+</body>
+</html>

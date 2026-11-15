@@ -1,0 +1,56 @@
+<section class="stats">
+  {% for stat in panel.stats %}
+  <div class="stat"><span class="label">{{ stat.label }}</span><span class="value">{{ stat.value }}</span></div>
+  {% endfor %}
+</section>
+
+<section class="card wide">
+  <h2>Events over time</h2>
+  <div class="chart" id="security-chart"></div>
+  <script type="application/json" class="chart-data" data-target="security-chart">{{ panel.chart|safe }}</script>
+</section>
+
+<div class="grid">
+  <section class="card">
+    <h2>Top offenders</h2>
+    {% if panel.offenders.is_empty() %}
+    <p class="empty">Nothing yet.</p>
+    {% else %}
+    <table>
+      <thead><tr><th>Address</th><th>Country</th><th class="num">Events</th><th class="num">Bans</th><th>Last seen</th></tr></thead>
+      <tbody>
+        {% for o in panel.offenders %}
+        <tr><td class="mono">{{ o.ip }}</td><td>{{ o.place }}</td><td class="num">{{ o.events }}</td><td class="num">{{ o.bans }}</td><td>{{ o.last_seen }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </section>
+
+  {% include "_bars.html" %}
+</div>
+
+<section class="card wide">
+  <h2>Timeline</h2>
+  {% if panel.events.is_empty() %}
+  <p class="empty">Nothing yet.</p>
+  {% else %}
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Time</th><th>Event</th><th>Source</th><th>Address</th><th class="num">Port</th><th>Detail</th></tr></thead>
+      <tbody>
+        {% for e in panel.events %}
+        <tr>
+          <td>{{ e.time }}</td>
+          <td><span class="tag {{ e.class }}">{{ e.kind }}</span></td>
+          <td>{{ e.source }}</td>
+          <td class="mono">{{ e.ip }}</td>
+          <td class="num">{{ e.port }}</td>
+          <td>{{ e.detail }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</section>

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Overview · core-pulse{% endblock %}
+{% block content %}
+<div id="panel"
+     hx-get="{{ base }}/fragments/overview?range={{ panel.range.param() }}"
+     hx-trigger="{% if panel.range.is_live() %}sse:tick{% else %}every 60s{% endif %}"
+     hx-swap="innerHTML">
+  {% include "_overview.html" %}
+</div>
+{% endblock %}
